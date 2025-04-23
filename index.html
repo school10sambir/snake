@@ -14,7 +14,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
     }
 
     .container {
@@ -76,26 +75,13 @@
       margin-top: 10px;
       font-size: 12px;
     }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .controls button {
-      margin: 5px;
-      width: 60px;
-      height: 60px;
-      font-size: 20px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Гра «Змійка»</h1>
-    <p><strong>Керування:</strong> W/A/S/D або Ц/І/Ф/В</p>
+    <p><strong>Керування:</strong> W (вгору), A (вліво), S (вниз), D (вправо)</p>
+    <p><strong>Підтримка ЦІФВ:</strong> українська розкладка</p>
     <p><strong>Пауза:</strong> клавіша «P» | <strong>Початок гри:</strong> кнопка або клавіша «Enter»</p>
 
     <label for="difficulty">Складність:</label>
@@ -122,16 +108,6 @@
 
   <div id="gameModal">
     <canvas id="gameCanvas" width="300" height="300"></canvas>
-    <div class="controls">
-      <button onclick="setDirection(0,-1)">⬆️</button>
-    </div>
-    <div class="controls">
-      <button onclick="setDirection(-1,0)">⬅️</button>
-      <button onclick="setDirection(1,0)">➡️</button>
-    </div>
-    <div class="controls">
-      <button onclick="setDirection(0,1)">⬇️</button>
-    </div>
   </div>
 
   <audio id="eatSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
@@ -173,11 +149,6 @@
       intervalId = setInterval(gameLoop, speed);
     }
 
-    function setDirection(x, y) {
-      if (direction.x === -x && direction.y === -y) return;
-      direction = { x, y };
-    }
-
     function keyPush(e) {
       const key = e.key.toLowerCase();
       if (key === 'p') {
@@ -191,10 +162,14 @@
       if (isPaused) return;
 
       switch (key) {
-        case 'w': case 'ц': if (direction.y === 0) direction = { x: 0, y: -1 }; break;
-        case 's': case 'і': if (direction.y === 0) direction = { x: 0, y: 1 }; break;
-        case 'a': case 'ф': if (direction.x === 0) direction = { x: -1, y: 0 }; break;
-        case 'd': case 'в': if (direction.x === 0) direction = { x: 1, y: 0 }; break;
+        case 'w':
+        case 'ц': if (direction.y === 0) direction = { x: 0, y: -1 }; break;
+        case 's':
+        case 'і': if (direction.y === 0) direction = { x: 0, y: 1 }; break;
+        case 'a':
+        case 'ф': if (direction.x === 0) direction = { x: -1, y: 0 }; break;
+        case 'd':
+        case 'в': if (direction.x === 0) direction = { x: 1, y: 0 }; break;
       }
     }
 
@@ -213,7 +188,7 @@
       if (
         head.x < 0 || head.y < 0 ||
         head.x >= gridSize || head.y >= gridSize ||
-        snake.some(s => s.x === head.x && s.y === head.y)
+        snake.slice(1).some(s => s.x === head.x && s.y === head.y)
       ) {
         document.getElementById("deadSound").play();
         clearInterval(intervalId);
@@ -252,6 +227,12 @@
     function updateScore() {
       document.getElementById("score").textContent = score;
     }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && document.getElementById('gameModal').style.display !== 'block') {
+        startGame();
+      }
+    });
   </script>
 </body>
 </html>
